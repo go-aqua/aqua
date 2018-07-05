@@ -56,3 +56,39 @@ func TestContext_Next(t *testing.T) {
 		t.Error("bad Next()", nums)
 	}
 }
+
+func TestContext_Panic(t *testing.T) {
+	nums := []byte{}
+	var errOut error
+
+	a := &Nova{
+		Handlers: []HandlerFunc{
+			func(ctx *Context) (err error) {
+				nums = append(nums, 1)
+				ctx.Next()
+				nums = append(nums, 11)
+				return
+			},
+			func(ctx *Context) (err error) {
+				nums = append(nums, 2)
+				ctx.Next()
+				nums = append(nums, 12)
+				return
+			},
+			func(ctx *Context) (err error) {
+				nums = append(nums, 3)
+				panic("ERROR")
+				return
+			},
+		},
+		ErrorHandler: func(ctx *Context, err error) {
+			errOut = err
+			return
+		},
+	}
+	c := a.CreateContext(nil, &http.Request{})
+	c.Next()
+	if !bytes.Equal(nums, []byte{1, 2, 3, 12, 11}) || errOut.Error() != "panic: ERROR" {
+		t.Error("bad Next()", nums)
+	}
+}

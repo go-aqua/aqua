@@ -2,6 +2,7 @@ package nova // import "github.com/novakit/nova"
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 )
 
@@ -37,6 +38,17 @@ func (c *Context) Set(key string, val interface{}) {
 
 // Next invoke the next HandlerFunc registered in application
 func (c *Context) Next() {
+	// guard panic
+	defer func() {
+		if r := recover(); r != nil {
+			if err, ok := r.(error); ok {
+				c.ErrorHandler(c, err)
+			} else {
+				c.ErrorHandler(c, fmt.Errorf("panic: %v", r))
+			}
+		}
+	}()
+
 	// reached end of handlers chain
 	if c.hIndex >= len(c.Handlers) {
 		http.NotFound(c.Res, c.Req)
