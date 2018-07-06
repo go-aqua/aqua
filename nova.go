@@ -14,10 +14,8 @@ type ErrorHandlerFunc func(*Context, error)
 type Nova struct {
 	// Env environment must be one of "production", "development", "test"
 	Env Env
-
 	// Handlers slice of handler functions
 	Handlers []HandlerFunc
-
 	// ErrorHandler handler will be invoked on error returned by previous handlers
 	ErrorHandler ErrorHandlerFunc
 }
@@ -55,6 +53,7 @@ func (n *Nova) CreateContext(res http.ResponseWriter, req *http.Request) *Contex
 		ErrorHandler: n.ErrorHandler,
 		Req:          req,
 		Res:          res,
+		Values:       map[string]interface{}{},
 	}
 }
 

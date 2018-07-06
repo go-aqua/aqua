@@ -1,6 +1,6 @@
 package nova // import "github.com/novakit/nova"
 
-// Env nil-safe environment string
+// Env empty-safe environment string
 type Env string
 
 const (
@@ -16,13 +16,10 @@ const (
 
 // IsProduction is production
 func (e Env) IsProduction() bool {
-	if len(e) == 0 {
-		return false
-	}
 	return e == Production
 }
 
-// IsDevelopment is development, nil is true
+// IsDevelopment is development, if empty returns true
 func (e Env) IsDevelopment() bool {
 	if len(e) == 0 {
 		return true
@@ -32,13 +29,10 @@ func (e Env) IsDevelopment() bool {
 
 // IsTest is test
 func (e Env) IsTest() bool {
-	if len(e) == 0 {
-		return false
-	}
 	return e == Test
 }
 
-// String the string form
+// String convert to string
 func (e Env) String() string {
 	return string(e)
 }
